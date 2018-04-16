@@ -152,7 +152,7 @@ func TestExtraDataTCP(t *testing.T) {
 		Host:     "fake-host",
 		Short:    string(short),
 		Full:     string(full),
-		TimeUnix: float64(time.Now().Unix()),
+		TimeUnix: float64(time.Now().Unix()) / 1e9,
 		Level:    6, // info
 		Facility: "writer_test",
 		Extra:    extra,
