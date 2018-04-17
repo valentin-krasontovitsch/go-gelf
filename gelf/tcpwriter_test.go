@@ -51,16 +51,11 @@ func TestNewTCPWriterConfig(t *testing.T) {
 	}
 }
 
-func assertMessages(msg *Message, short, full string, t *testing.T) {
+func assertMessages(msg *Message, short string, t *testing.T) {
 	if msg.Short != short {
 		t.Errorf("msg.Short: expected %s, got %s", short, msg.Short)
 		return
 	}
-
-	if msg.Full != full {
-		t.Errorf("msg.Full: expected %s, got %s", full, msg.Full)
-	}
-
 }
 
 func TestWriteSmallMultiLineTCP(t *testing.T) {
@@ -72,7 +67,7 @@ func TestWriteSmallMultiLineTCP(t *testing.T) {
 		return
 	}
 
-	assertMessages(msg, "awesomesauce", msgData, t)
+	assertMessages(msg, msgData, t)
 }
 
 func TestWriteSmallOneLineTCP(t *testing.T) {
@@ -85,7 +80,7 @@ func TestWriteSmallOneLineTCP(t *testing.T) {
 		return
 	}
 
-	assertMessages(msg, msgDataTrunc, "", t)
+	assertMessages(msg, msgDataTrunc, t)
 
 	fileExpected := "/go-gelf/gelf/tcpwriter_test.go"
 	if !strings.HasSuffix(msg.Extra["_file"].(string), fileExpected) {
@@ -114,7 +109,7 @@ func TestWriteBigMessageTCP(t *testing.T) {
 		return
 	}
 
-	assertMessages(msg, "awesomesauce", msgData, t)
+	assertMessages(msg, msgData, t)
 }
 
 func TestWriteMultiPacketMessageTCP(t *testing.T) {
@@ -131,7 +126,7 @@ func TestWriteMultiPacketMessageTCP(t *testing.T) {
 		return
 	}
 
-	assertMessages(msg, "awesomesauce", msgData, t)
+	assertMessages(msg, msgData, t)
 }
 
 func TestExtraDataTCP(t *testing.T) {
@@ -145,13 +140,11 @@ func TestExtraDataTCP(t *testing.T) {
 		"_line": 186,
 	}
 
-	short := "quick"
-	full := short + "\nwith more detail"
+	short := "quick" + "\nwith more detail"
 	m := Message{
 		Version:  "1.0",
 		Host:     "fake-host",
 		Short:    string(short),
-		Full:     string(full),
 		TimeUnix: float64(time.Now().Unix()),
 		Level:    6, // info
 		Facility: "writer_test",
@@ -165,7 +158,7 @@ func TestExtraDataTCP(t *testing.T) {
 		return
 	}
 
-	assertMessages(msg, short, full, t)
+	assertMessages(msg, short, t)
 
 	if len(msg.Extra) != 3 {
 		t.Errorf("extra extra fields in %v", msg.Extra)
@@ -198,8 +191,8 @@ func TestWrite2MessagesWithConnectionDropTCP(t *testing.T) {
 		return
 	}
 
-	assertMessages(msg1, "First message", msgData1, t)
-	assertMessages(msg2, "Second message", msgData2, t)
+	assertMessages(msg1, msgData1, t)
+	assertMessages(msg2, msgData2, t)
 }
 
 func TestWrite2MessagesWithServerDropTCP(t *testing.T) {
@@ -212,7 +205,7 @@ func TestWrite2MessagesWithServerDropTCP(t *testing.T) {
 		return
 	}
 
-	assertMessages(msg1, "First message", msgData1, t)
+	assertMessages(msg1, msgData1, t)
 }
 
 func setupConnections() (*TCPReader, chan string, chan string, *TCPWriter, error) {

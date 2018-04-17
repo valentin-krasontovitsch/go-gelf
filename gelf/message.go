@@ -13,7 +13,6 @@ type Message struct {
 	Version  string                 `json:"version"`
 	Host     string                 `json:"host"`
 	Short    string                 `json:"short_message"`
-	Full     string                 `json:"full_message,omitempty"`
 	TimeUnix float64                `json:"timestamp"`
 	Level    int32                  `json:"level,omitempty"`
 	Facility string                 `json:"facility,omitempty"`
@@ -94,8 +93,6 @@ func (m *Message) UnmarshalJSON(data []byte) error {
 			m.Host, ok = v.(string)
 		case "short_message":
 			m.Short, ok = v.(string)
-		case "full_message":
-			m.Full, ok = v.(string)
 		case "timestamp":
 			m.TimeUnix, ok = v.(float64)
 		case "level":
@@ -127,22 +124,10 @@ func constructMessage(p []byte, hostname string, facility string, file string, l
 	// remove trailing and leading whitespace
 	p = bytes.TrimSpace(p)
 
-	// If there are newlines in the message, use the first line
-	// for the short message and set the full message to the
-	// original input.  If the input has no newlines, stick the
-	// whole thing in Short.
-	short := p
-	full := []byte("")
-	if i := bytes.IndexRune(p, '\n'); i > 0 {
-		short = p[:i]
-		full = p
-	}
-
 	m = &Message{
 		Version:  "1.1",
 		Host:     hostname,
-		Short:    string(short),
-		Full:     string(full),
+		Short:    string(p),
 		TimeUnix: float64(time.Now().Unix()),
 		Level:    6, // info
 		Facility: facility,

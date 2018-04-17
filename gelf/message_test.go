@@ -10,7 +10,6 @@ func TestWrongFieldTypes(t *testing.T) {
 		"version":       `{"version": 1.1}`,
 		"host":          `{"host": ["a", "b"]}`,
 		"short_message": `{"short_message": {"a": "b"}}`,
-		"full_message":  `{"full_message": null}`,
 		"timestamp":     `{"timestamp": "12345"}`,
 		"level":         `{"level": false}`,
 		"facility":      `{"facility": true}`,
@@ -24,4 +23,12 @@ func TestWrongFieldTypes(t *testing.T) {
 		}
 	}
 
+}
+
+func Test_constructMessage_WritesMultilineMessageToShortMessageField(t *testing.T) {
+	msgText := "hello\nthere"
+	msg := constructMessage([]byte(msgText), "", "", "", 0)
+	if msg.Short != msgText {
+		t.Errorf("Short field of message \"%s\" does not coincide with message text \"%s\"", msg.Short, msgText)
+	}
 }
