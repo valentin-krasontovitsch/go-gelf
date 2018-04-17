@@ -50,15 +50,7 @@ func (r *Reader) Read(p []byte) (int, error) {
 		return -1, err
 	}
 
-	var data string
-
-	if msg.Full == "" {
-		data = msg.Short
-	} else {
-		data = msg.Full
-	}
-
-	return strings.NewReader(data).Read(p)
+	return strings.NewReader(msg.Short).Read(p)
 }
 
 func (r *Reader) ReadMessage() (*Message, error) {
